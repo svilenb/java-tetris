@@ -2,7 +2,6 @@ package game;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.Arrays;
 
 public class Piece {
 	private int x;
@@ -17,7 +16,7 @@ public class Piece {
 
 	public void render(Graphics g) {
 		char[][] shape = this.shape.getShape();
-		
+
 		for (int row = 0; row < shape.length; row++) {
 			for (int col = 0; col < shape[0].length; col++) {
 				int rectX = (this.x + col) * 30;
@@ -51,6 +50,14 @@ public class Piece {
 
 	public void rotate() {
 		this.shape.rotate();
+	}
+
+	public void moveLeft() {
+		this.x--;
+	}
+
+	public void moveRight() {
+		this.x++;
 	}
 
 	public char[][] getShape() {

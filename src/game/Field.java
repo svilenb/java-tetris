@@ -1,7 +1,6 @@
 package game;
 
 import java.awt.Graphics;
-import java.time.temporal.IsoFields;
 import java.util.Random;
 import java.awt.*;
 
@@ -9,13 +8,13 @@ public class Field {
 	private char[][] field;
 	private Random random;
 
-	public Field() {
+	public Field(int fieldHeight, int fieldWidth) {
 		this.random = new Random();
-		this.initializeField();
+		this.initializeField(fieldHeight, fieldWidth);
 	}
 
-	private void initializeField() {
-		this.field = new char[20][10];
+	private void initializeField(int fieldHeight, int fieldWidth) {
+		this.field = new char[fieldHeight][fieldWidth];
 
 		for (int row = 0; row < field.length; row++) {
 			for (int col = 0; col < field[0].length; col++) {
@@ -50,8 +49,54 @@ public class Field {
 		for (int row = 0; row < pieceShape.length; row++) {
 			for (int col = 0; col < pieceShape[row].length; col++) {
 				boolean isPieceBrick = pieceShape[row][col] == '2';
-				boolean isFieldBrick = this.field[pieceY + row + 1][pieceX + col] == '1';
+				boolean isFieldBrick;
+				boolean isRowInField = pieceY + row + 1 < this.field.length && pieceY + row + 1 >= 0;
+				boolean isColInField = pieceX + col < this.field[pieceY + row].length && pieceX + col >= 0;
+
+				if (isRowInField && isColInField && this.field[pieceY + row + 1][pieceX + col] == '1') {
+					isFieldBrick = true;
+				} else {
+					isFieldBrick = false;
+				}
+
 				if (isPieceBrick && isFieldBrick) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public boolean doesPieceTouchesLeftWall(Piece piece) {
+		char[][] pieceShape = piece.getShape();
+		int pieceX = piece.getX();
+
+		for (int row = 0; row < pieceShape.length; row++) {
+			for (int col = 0; col < pieceShape[row].length; col++) {
+				boolean isPieceBrick = pieceShape[row][col] == '2';
+				boolean isNextToWall = pieceX + col == 0;
+
+				if (isPieceBrick && isNextToWall) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public boolean doesPieceTouchesRightWall(Piece piece) {
+		char[][] pieceShape = piece.getShape();
+		int pieceX = piece.getX();
+		int pieceY = piece.getY();
+
+		for (int row = 0; row < pieceShape.length; row++) {
+			for (int col = 0; col < pieceShape[row].length; col++) {
+				boolean isPieceBrick = pieceShape[row][col] == '2';
+				boolean isNextToWall = pieceX + col == this.field[pieceY + row].length - 1;
+
+				if (isPieceBrick && isNextToWall) {
 					return true;
 				}
 			}

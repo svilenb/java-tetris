@@ -10,9 +10,12 @@ public class Game implements Runnable {
 	private Display display;
 	private int width;
 	private int height;
+	private int fieldHeight = 20;
+	private int fieldWidth = 10;
 	private String title;
 	private boolean running = false;
 	private Thread thread;
+	@SuppressWarnings("unused")
 	private InputHandler inputHandler;
 	private BufferStrategy bs;
 	private Graphics g;
@@ -25,17 +28,16 @@ public class Game implements Runnable {
 	public Game(String title) {
 		this.width = 400;
 		this.height = 600;
+		this.fieldHeight = 20;
+		this.fieldWidth = 10;
 		this.title = title;
-		this.field = new Field();		
-		this.piece = PieceGenerator.generatePiece(5, 1);
+		this.field = new Field(this.fieldHeight, this.fieldWidth);
+		this.piece = PieceGenerator.generatePiece();
 	}
 
 	private void init() {
-		// Initializing a new display.Display object
 		display = new Display(this.title, this.width, this.height);
-		this.inputHandler = new InputHandler(this.display);
-
-		// Initializing all the states
+		this.inputHandler = new InputHandler(this.display, this);
 		gameState = new GameState();
 		menuState = new MenuState();
 		settingsState = new SettingsState();
@@ -43,7 +45,6 @@ public class Game implements Runnable {
 		// Setting the currentState to gameState because we do not have
 		// any more states set up
 		// StateManage.setCurrentState(gameState);
-
 	}
 
 	// The method that will update all the variables
@@ -55,6 +56,7 @@ public class Game implements Runnable {
 
 		if (this.field.isPieceFallen(this.piece)) {
 			this.field.placePiece(this.piece);
+			this.piece = PieceGenerator.generatePiece();
 		} else {
 			this.piece.tick();
 		}
@@ -74,7 +76,7 @@ public class Game implements Runnable {
 			return;
 		}
 		// Instantiates the graphics related to the bufferStrategy
-		g = bs.getDrawGraphics();
+		g = this.bs.getDrawGraphics();
 		// Clear the screen at every frame
 		g.clearRect(0, 0, this.width, this.height);
 		// Beginning of drawing things on the screen
@@ -154,4 +156,32 @@ public class Game implements Runnable {
 		}
 	}
 
+	public void rotatePiece() {
+		this.piece.rotate();
+		this.piece.render(this.bs.getDrawGraphics());
+		bs.show();
+		// Shows everything stored in the Graphics object
+		g.dispose();
+	}
+
+	public void movePieceLeft() {
+		if (!this.field.doesPieceTouchesLeftWall(this.piece)) {
+			this.piece.moveLeft();
+			this.piece.render(this.bs.getDrawGraphics());
+			bs.show();
+			// Shows everything stored in the Graphics object
+			g.dispose();
+		}
+
+	}
+
+	public void movePieceRight() {
+		if (!this.field.doesPieceTouchesRightWall(this.piece)) {
+			this.piece.moveRight();
+			this.piece.render(this.bs.getDrawGraphics());
+			bs.show();
+			// Shows everything stored in the Graphics object
+			g.dispose();
+		}
+	}
 }

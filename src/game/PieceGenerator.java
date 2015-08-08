@@ -22,4 +22,7 @@ public final class PieceGenerator {
 		}
 	}
 
+	public static Piece generatePiece() {
+		return generatePiece(4, 0);
+	}
 }
