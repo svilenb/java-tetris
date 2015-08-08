@@ -1,6 +1,5 @@
 package game;
 
-import java.lang.*;
 import display.Display;
 import states.*;
 
@@ -27,11 +26,8 @@ public class Game implements Runnable {
 		this.width = 400;
 		this.height = 600;
 		this.title = title;
-		this.field = new Field();
-
-		char[][] pieceShape = { { '0', '0', '2', '0' }, { '0', '2', '2', '0' }, { '0', '2', '0', '0' },
-				{ '0', '0', '0', '0' } };
-		this.piece = new Piece(5, 1, pieceShape);
+		this.field = new Field();		
+		this.piece = PieceGenerator.generatePiece(5, 1);
 	}
 
 	private void init() {

@@ -5,17 +5,19 @@ import java.awt.Graphics;
 import java.util.Arrays;
 
 public class Piece {
-	private int x;	
+	private int x;
 	private int y;
-	private char[][] shape;
+	private PieceShape shape;
 
-	public Piece(int x, int y, char[][] shape) {
+	public Piece(int x, int y, PieceShape shape) {
 		this.x = x;
 		this.y = y;
 		this.shape = shape;
 	}
 
 	public void render(Graphics g) {
+		char[][] shape = this.shape.getShape();
+		
 		for (int row = 0; row < shape.length; row++) {
 			for (int col = 0; col < shape[0].length; col++) {
 				int rectX = (this.x + col) * 30;
@@ -23,7 +25,7 @@ public class Piece {
 				int rectWidth = 30;
 				int rectHeight = 30;
 
-				if (this.shape[row][col] == '2') {
+				if (shape[row][col] == '2') {
 					g.setColor(Color.blue);
 					g.fillRect(rectX, rectY, rectWidth, rectHeight);
 				}
@@ -46,18 +48,12 @@ public class Piece {
 	public int getY() {
 		return y;
 	}
-	
-	public char[][] getShape() {
-		char[][] result = new char[this.shape.length][];
 
-		for (int i = 0; i < this.shape.length; i++) {
-			result[i] = Arrays.copyOf(this.shape[i], this.shape[i].length);
-		}
-
-		return result;
+	public void rotate() {
+		this.shape.rotate();
 	}
 
-	public void place(Field field) {
-
+	public char[][] getShape() {
+		return this.shape.getShape();
 	}
 }
