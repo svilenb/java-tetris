@@ -67,7 +67,7 @@ public class Field {
 
 		return false;
 	}
-	
+
 	public boolean isPieceIntoBrick(Piece piece) {
 		char[][] pieceShape = piece.getShape();
 		int pieceX = piece.getX();
@@ -80,7 +80,7 @@ public class Field {
 				boolean isRowInField = pieceY + row + 1 < this.field.length && pieceY + row >= 0;
 				boolean isColInField = pieceX + col < this.field[pieceY + row].length && pieceX + col >= 0;
 
-				if (isRowInField && isColInField && this.field[pieceY + row ][pieceX + col] == '1') {
+				if (isRowInField && isColInField && this.field[pieceY + row][pieceX + col] == '1') {
 					isFieldBrick = true;
 				} else {
 					isFieldBrick = false;
@@ -131,9 +131,9 @@ public class Field {
 
 		return false;
 	}
-	
+
 	public boolean doesPieceTouchesBottom(Piece piece) {
-		char[][] pieceShape = piece.getShape();		
+		char[][] pieceShape = piece.getShape();
 		int pieceY = piece.getY();
 
 		for (int row = 0; row < pieceShape.length; row++) {
@@ -157,11 +157,11 @@ public class Field {
 
 		for (int row = 0; row < pieceShape.length; row++) {
 			for (int col = 0; col < pieceShape[row].length; col++) {
-				boolean isPieceBrick = pieceShape[row][col] == '2';				
+				boolean isPieceBrick = pieceShape[row][col] == '2';
 				boolean isRowInField = pieceY + row + 1 < this.field.length && pieceY + row + 1 >= 0;
 				boolean isColInField = pieceX + col < this.field[pieceY + row].length && pieceX + col >= 0;
-				
-				if (isPieceBrick && (!isRowInField || ! isColInField)) {
+
+				if (isPieceBrick && (!isRowInField || !isColInField)) {
 					return true;
 				}
 			}
@@ -169,7 +169,7 @@ public class Field {
 
 		return false;
 	}
-	
+
 	public void placePiece(Piece piece) {
 		char[][] pieceShape = piece.getShape();
 		int pieceX = piece.getX();
@@ -180,6 +180,30 @@ public class Field {
 				if (pieceShape[row][col] == '2') {
 					this.field[pieceY + row][pieceX + col] = '1';
 				}
+			}
+		}
+	}
+
+	public void destroyFullRows() {
+		for (int row = 0; row < this.field.length; row++) {
+			boolean isFullRow = true;
+			for (int col = 0; col < this.field[row].length; col++) {
+				if (this.field[row][col] == '0') {
+					isFullRow = false;
+					break;
+				}
+			}
+
+			if (isFullRow) {
+				this.shiftRows(row);
+			}
+		}
+	}
+
+	public void shiftRows(int startingRow) {
+		for (int row = startingRow; row > 0; row--) {
+			for (int col = 0; col < this.field[row].length; col++) {
+				this.field[row][col] = this.field[row - 1][col];
 			}
 		}
 	}

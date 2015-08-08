@@ -27,6 +27,8 @@ public class Piece {
 				if (shape[row][col] == '2') {
 					g.setColor(Color.blue);
 					g.fillRect(rectX, rectY, rectWidth, rectHeight);
+					g.setColor(Color.black);
+					g.drawRect(rectX, rectY, rectWidth, rectHeight);
 				}
 			}
 		}

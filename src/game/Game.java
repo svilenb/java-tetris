@@ -56,6 +56,7 @@ public class Game implements Runnable {
 
 		if (this.field.isPieceFallen(this.piece)) {
 			this.field.placePiece(this.piece);
+			this.field.destroyFullRows();
 			this.piece = PieceGenerator.generatePiece();
 		} else {
 			this.piece.tick();
