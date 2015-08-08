@@ -17,8 +17,14 @@ public final class PieceGenerator {
 			return new Piece(x, y, new PieceShapeJ());
 		} else if (randomNumber == 2) {
 			return new Piece(x, y, new PieceShapeL());
-		} else {
+		} else if (randomNumber == 3) {
+			return new Piece(x, y, new PieceShapeO());
+		} else if (randomNumber == 4) {
 			return new Piece(x, y, new PieceShapeS());
+		} else if (randomNumber == 5) {
+			return new Piece(x, y, new PieceShapeT());
+		} else {
+			return new Piece(x, y, new PieceShapeZ());
 		}
 	}
 

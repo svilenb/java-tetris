@@ -158,7 +158,7 @@ public class Game implements Runnable {
 
 	public void rotatePiece() {
 		this.piece.rotate();
-		this.piece.render(this.bs.getDrawGraphics());
+		this.render();
 		bs.show();
 		// Shows everything stored in the Graphics object
 		g.dispose();
@@ -167,18 +167,17 @@ public class Game implements Runnable {
 	public void movePieceLeft() {
 		if (!this.field.doesPieceTouchesLeftWall(this.piece)) {
 			this.piece.moveLeft();
-			this.piece.render(this.bs.getDrawGraphics());
+			this.render();
 			bs.show();
 			// Shows everything stored in the Graphics object
 			g.dispose();
 		}
-
 	}
 
 	public void movePieceRight() {
 		if (!this.field.doesPieceTouchesRightWall(this.piece)) {
 			this.piece.moveRight();
-			this.piece.render(this.bs.getDrawGraphics());
+			this.render();
 			bs.show();
 			// Shows everything stored in the Graphics object
 			g.dispose();
