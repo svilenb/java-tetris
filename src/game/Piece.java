@@ -32,12 +32,8 @@ public class Piece {
 		}
 	}
 
-	private void move() {
-		this.y++;
-	}
-
 	public void tick() {
-		this.move();
+		this.moveDown();
 	}
 
 	public int getX() {
@@ -52,12 +48,24 @@ public class Piece {
 		this.shape.rotate();
 	}
 
+	public void undoRotate() {
+		this.shape.undoRotate();
+	}
+
 	public void moveLeft() {
 		this.x--;
 	}
 
 	public void moveRight() {
 		this.x++;
+	}
+
+	public void moveDown() {
+		this.y++;
+	}
+
+	public void moveUp() {
+		this.y--;
 	}
 
 	public char[][] getShape() {

@@ -30,7 +30,7 @@ public abstract class PieceShape {
 
 		return result;
 	}
-	
+
 	public void rotate() {
 		int currentShapeIndex = this.getCurrentShapeIndex();
 		char[][][] shapes = this.getShapes();
@@ -39,6 +39,17 @@ public abstract class PieceShape {
 			this.setCurrentShapeIndex(0);
 		} else {
 			this.setCurrentShapeIndex(currentShapeIndex + 1);
+		}
+	}
+
+	public void undoRotate() {
+		int currentShapeIndex = this.getCurrentShapeIndex();
+		char[][][] shapes = this.getShapes();
+
+		if (currentShapeIndex == 0) {
+			this.setCurrentShapeIndex(shapes.length - 1);
+		} else {
+			this.setCurrentShapeIndex(currentShapeIndex - 1);
 		}
 	}
 }

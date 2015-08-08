@@ -67,6 +67,33 @@ public class Field {
 
 		return false;
 	}
+	
+	public boolean isPieceIntoBrick(Piece piece) {
+		char[][] pieceShape = piece.getShape();
+		int pieceX = piece.getX();
+		int pieceY = piece.getY();
+
+		for (int row = 0; row < pieceShape.length; row++) {
+			for (int col = 0; col < pieceShape[row].length; col++) {
+				boolean isPieceBrick = pieceShape[row][col] == '2';
+				boolean isFieldBrick;
+				boolean isRowInField = pieceY + row + 1 < this.field.length && pieceY + row >= 0;
+				boolean isColInField = pieceX + col < this.field[pieceY + row].length && pieceX + col >= 0;
+
+				if (isRowInField && isColInField && this.field[pieceY + row ][pieceX + col] == '1') {
+					isFieldBrick = true;
+				} else {
+					isFieldBrick = false;
+				}
+
+				if (isPieceBrick && isFieldBrick) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
 
 	public boolean doesPieceTouchesLeftWall(Piece piece) {
 		char[][] pieceShape = piece.getShape();
@@ -104,7 +131,45 @@ public class Field {
 
 		return false;
 	}
+	
+	public boolean doesPieceTouchesBottom(Piece piece) {
+		char[][] pieceShape = piece.getShape();		
+		int pieceY = piece.getY();
 
+		for (int row = 0; row < pieceShape.length; row++) {
+			for (int col = 0; col < pieceShape[row].length; col++) {
+				boolean isPieceBrick = pieceShape[row][col] == '2';
+				boolean isNextToBottom = pieceY + row == this.field.length - 1;
+
+				if (isPieceBrick && isNextToBottom) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public boolean isPieceOut(Piece piece) {
+		char[][] pieceShape = piece.getShape();
+		int pieceX = piece.getX();
+		int pieceY = piece.getY();
+
+		for (int row = 0; row < pieceShape.length; row++) {
+			for (int col = 0; col < pieceShape[row].length; col++) {
+				boolean isPieceBrick = pieceShape[row][col] == '2';				
+				boolean isRowInField = pieceY + row + 1 < this.field.length && pieceY + row + 1 >= 0;
+				boolean isColInField = pieceX + col < this.field[pieceY + row].length && pieceX + col >= 0;
+				
+				if (isPieceBrick && (!isRowInField || ! isColInField)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+	
 	public void placePiece(Piece piece) {
 		char[][] pieceShape = piece.getShape();
 		int pieceX = piece.getX();

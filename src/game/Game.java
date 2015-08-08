@@ -158,29 +158,43 @@ public class Game implements Runnable {
 
 	public void rotatePiece() {
 		this.piece.rotate();
-		this.render();
-		bs.show();
-		// Shows everything stored in the Graphics object
-		g.dispose();
+		if (this.field.isPieceOut(this.piece) || this.field.isPieceIntoBrick(this.piece)) {
+			this.piece.undoRotate();
+		} else {
+			this.render();
+		}
 	}
 
 	public void movePieceLeft() {
 		if (!this.field.doesPieceTouchesLeftWall(this.piece)) {
 			this.piece.moveLeft();
-			this.render();
-			bs.show();
-			// Shows everything stored in the Graphics object
-			g.dispose();
+			if (this.field.isPieceIntoBrick(this.piece)) {
+				this.piece.moveRight();
+			} else {
+				this.render();
+			}
 		}
 	}
 
 	public void movePieceRight() {
 		if (!this.field.doesPieceTouchesRightWall(this.piece)) {
 			this.piece.moveRight();
-			this.render();
-			bs.show();
-			// Shows everything stored in the Graphics object
-			g.dispose();
+			if (this.field.isPieceIntoBrick(this.piece)) {
+				this.piece.moveLeft();
+			} else {
+				this.render();
+			}
+		}
+	}
+
+	public void movePieceDown() {
+		if (!this.field.doesPieceTouchesBottom(this.piece)) {
+			this.piece.moveDown();
+			if (this.field.isPieceIntoBrick(this.piece)) {
+				this.piece.moveUp();
+			} else {
+				this.render();
+			}
 		}
 	}
 }
