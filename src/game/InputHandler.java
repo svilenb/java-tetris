@@ -28,6 +28,10 @@ public class InputHandler implements KeyListener {
 			game.movePieceRight();
 		} else if (keyCode == KeyEvent.VK_ESCAPE) {
 			System.exit(0);
+		} else if (keyCode == KeyEvent.VK_P) {
+			game.pause();
+		} else if (keyCode == KeyEvent.VK_S) {
+			game.resume();
 		}
 	}
 

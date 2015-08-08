@@ -24,6 +24,7 @@ public class Game implements Runnable {
 	private State settingsState;
 	private Field field;
 	private Piece piece;
+	private boolean paused;
 
 	public Game(String title) {
 		this.width = 400;
@@ -53,6 +54,10 @@ public class Game implements Runnable {
 		// if (StateManager.getState() != null) {
 		// StateManager.getState().tick();
 		// }
+
+		if (this.paused) {
+			return;
+		}
 
 		if (this.field.isPieceFallen(this.piece)) {
 			this.field.placePiece(this.piece);
@@ -133,10 +138,10 @@ public class Game implements Runnable {
 		// Setting the while-game-loop to run
 		running = true;
 		// Initialize the thread that will work with "this" class (game.Game)
-		thread = new Thread(this);
+		this.thread = new Thread(this);
 		// The start method will call start the new thread and it will call
 		// the run method in our class
-		thread.start();
+		this.thread.start();
 	}
 
 	// Creating a stop method for the Thread to stop our game
@@ -151,10 +156,18 @@ public class Game implements Runnable {
 		// The join method stops the current method from executing and it
 		// must be surrounded in try-catch in order to work
 		try {
-			thread.join();
+			this.thread.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void pause() {
+		this.paused = true;
+	}
+
+	public void resume() {
+		this.paused = false;
 	}
 
 	public void rotatePiece() {
