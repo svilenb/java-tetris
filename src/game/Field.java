@@ -49,23 +49,22 @@ public class Field {
 		for (int row = 0; row < pieceShape.length; row++) {
 			for (int col = 0; col < pieceShape[row].length; col++) {
 				boolean isPieceBrick = pieceShape[row][col] == '2';
-				boolean isFieldBrick;
-				boolean isRowInField = pieceY + row + 1 < this.field.length && pieceY + row + 1 >= 0;
-				boolean isColInField = pieceX + col < this.field[pieceY + row].length && pieceX + col >= 0;
 
-				if (isRowInField && isColInField && this.field[pieceY + row + 1][pieceX + col] == '1') {
-					isFieldBrick = true;
-				} else {
-					isFieldBrick = false;
-				}
-
-				if (isPieceBrick && isFieldBrick) {
+				if (isPieceBrick && this.checkIsFieldBrick(pieceY + row + 1, pieceX + col)) {
 					return true;
 				}
 			}
 		}
 
 		return false;
+	}
+
+	private boolean checkRowInField(int row) {
+		return row < this.field.length && row >= 0;
+	}
+
+	private boolean checkCollInField(int row, int col) {
+		return col < this.field[row].length && col >= 0;
 	}
 
 	public boolean isPieceIntoBrick(Piece piece) {
@@ -76,17 +75,8 @@ public class Field {
 		for (int row = 0; row < pieceShape.length; row++) {
 			for (int col = 0; col < pieceShape[row].length; col++) {
 				boolean isPieceBrick = pieceShape[row][col] == '2';
-				boolean isFieldBrick;
-				boolean isRowInField = pieceY + row + 1 < this.field.length && pieceY + row >= 0;
-				boolean isColInField = pieceX + col < this.field[pieceY + row].length && pieceX + col >= 0;
 
-				if (isRowInField && isColInField && this.field[pieceY + row][pieceX + col] == '1') {
-					isFieldBrick = true;
-				} else {
-					isFieldBrick = false;
-				}
-
-				if (isPieceBrick && isFieldBrick) {
+				if (isPieceBrick && checkIsFieldBrick(pieceY + row, pieceX + col)) {
 					return true;
 				}
 			}
@@ -95,16 +85,17 @@ public class Field {
 		return false;
 	}
 
+	private boolean checkIsFieldBrick(int row, int col) {
+		return !this.checkRowInField(row) || !this.checkCollInField(row, col) || this.field[row][col] == '1';
+	}
+
 	public boolean doesPieceTouchesLeftWall(Piece piece) {
 		char[][] pieceShape = piece.getShape();
 		int pieceX = piece.getX();
 
 		for (int row = 0; row < pieceShape.length; row++) {
 			for (int col = 0; col < pieceShape[row].length; col++) {
-				boolean isPieceBrick = pieceShape[row][col] == '2';
-				boolean isNextToWall = pieceX + col == 0;
-
-				if (isPieceBrick && isNextToWall) {
+				if (pieceShape[row][col] == '2' && pieceX + col == 0) {
 					return true;
 				}
 			}
@@ -120,10 +111,7 @@ public class Field {
 
 		for (int row = 0; row < pieceShape.length; row++) {
 			for (int col = 0; col < pieceShape[row].length; col++) {
-				boolean isPieceBrick = pieceShape[row][col] == '2';
-				boolean isNextToWall = pieceX + col == this.field[pieceY + row].length - 1;
-
-				if (isPieceBrick && isNextToWall) {
+				if (pieceShape[row][col] == '2' && pieceX + col == this.field[pieceY + row].length - 1) {
 					return true;
 				}
 			}
@@ -138,10 +126,7 @@ public class Field {
 
 		for (int row = 0; row < pieceShape.length; row++) {
 			for (int col = 0; col < pieceShape[row].length; col++) {
-				boolean isPieceBrick = pieceShape[row][col] == '2';
-				boolean isNextToBottom = pieceY + row == this.field.length - 1;
-
-				if (isPieceBrick && isNextToBottom) {
+				if (pieceShape[row][col] == '2' && pieceY + row == this.field.length - 1) {
 					return true;
 				}
 			}
@@ -157,11 +142,8 @@ public class Field {
 
 		for (int row = 0; row < pieceShape.length; row++) {
 			for (int col = 0; col < pieceShape[row].length; col++) {
-				boolean isPieceBrick = pieceShape[row][col] == '2';
-				boolean isRowInField = pieceY + row + 1 < this.field.length && pieceY + row + 1 >= 0;
-				boolean isColInField = pieceX + col < this.field[pieceY + row].length && pieceX + col >= 0;
-
-				if (isPieceBrick && (!isRowInField || !isColInField)) {
+				if (pieceShape[row][col] == '2' && (!this.checkRowInField(pieceY + row)
+						|| !this.checkCollInField(pieceY + row, pieceX + col))) {
 					return true;
 				}
 			}
