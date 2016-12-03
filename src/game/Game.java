@@ -14,7 +14,7 @@ public class Game implements Runnable {
 	public static final int STARTING_PIECE_X = 4;
 	public static final int STARTING_PIECE_Y = 0;
 	
-	private static final int DISPLAY_WIDTH = 450;
+	private static final int DISPLAY_WIDTH = 420;
 	private static final int DISPLAY_HEIGHT = 600;
 
 	private static final int FIELD_WIDTH = 10;
