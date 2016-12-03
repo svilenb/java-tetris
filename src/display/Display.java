@@ -6,17 +6,33 @@ import java.awt.*;
 public class Display extends Canvas {
 	private JFrame frame;
 	private Canvas canvas;
-	private String title;
+	private String title;	
 	private int width;
 	private int height;
 
 	public Display(String title, int width, int height) {
-		this.title = title;
-		this.width = width;
-		this.height = height;
+		this.title = title;	
+		this.setWidth(width);
+		this.setHeight(height);		
 		this.createDisplay();
 	}
 
+	public int getWidth() {
+		return width;
+	}
+
+	private void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	private void setHeight(int height) {
+		this.height = height;
+	}
+	
 	private void createDisplay() {
 		// Creates a new Frame with a title
 		frame = new JFrame(this.title);

@@ -21,70 +21,31 @@ public class Game implements Runnable {
 	private static final int FIELD_HEIGHT = 20;
 
 	private Display display;
-	private int displayWidth;
-	private int displayHeight;
-	private int fieldHeight;
-	private int fieldWidth;
 	private String title;
 	private boolean running = false;
 	private Thread thread;
 	@SuppressWarnings("unused")
 	private InputHandler inputHandler;
 	private BufferStrategy bs;
-	private Graphics g;
+	private Graphics graphics;
 	private State gameState;
 	private State menuState;
 	private State settingsState;
 	private Field field;
-	private Piece piece;
+	
+	private Piece currentPiece;
 	private Piece nextPiece;
+	
 	private boolean paused;
 
 	public Game(String title) {
 		this.setTitle(title);
 
-		this.setDisplayWidth(Game.DISPLAY_WIDTH);
-		this.setDisplayHeight(Game.DISPLAY_HEIGHT);
-
-		this.setFieldHeight(Game.FIELD_HEIGHT);
-		this.setFieldWidth(Game.FIELD_WIDTH);
-
-		this.field = new Field(this.getFieldHeight(), this.getFieldWidth());
-		this.setPiece(PieceGenerator.generatePiece());
+		this.field = new Field(Game.FIELD_HEIGHT, Game.FIELD_WIDTH);
+		
+		this.setCurrentPiece(PieceGenerator.generatePiece());
 		this.setNextPiece(PieceGenerator.generatePiece(Game.NEXT_PIECE_X, Game.NEXT_PIECE_Y));
-	}
-
-	private int getDisplayWidth() {
-		return displayWidth;
-	}
-
-	private void setDisplayWidth(int width) {
-		this.displayWidth = width;
-	}
-
-	private int getDisplayHeight() {
-		return displayHeight;
-	}
-
-	private void setDisplayHeight(int height) {
-		this.displayHeight = height;
-	}
-
-	private int getFieldHeight() {
-		return fieldHeight;
-	}
-
-	private void setFieldHeight(int fieldHeight) {
-		this.fieldHeight = fieldHeight;
-	}
-
-	private int getFieldWidth() {
-		return fieldWidth;
-	}
-
-	private void setFieldWidth(int fieldWidth) {
-		this.fieldWidth = fieldWidth;
-	}
+	}		
 
 	private String getTitle() {
 		return title;
@@ -102,12 +63,12 @@ public class Game implements Runnable {
 		this.running = running;
 	}
 
-	private Piece getPiece() {
-		return piece;
+	private Piece getCurrentPiece() {
+		return currentPiece;
 	}
 
-	private void setPiece(Piece piece) {
-		this.piece = piece;
+	private void setCurrentPiece(Piece piece) {
+		this.currentPiece = piece;
 	}
 
 	private Piece getNextPiece() {
@@ -127,7 +88,7 @@ public class Game implements Runnable {
 	}
 
 	private void init() {
-		display = new Display(this.title, this.displayWidth, this.displayHeight);
+		this.display = new Display(this.getTitle(), Game.DISPLAY_WIDTH, Game.DISPLAY_HEIGHT);
 		this.inputHandler = new InputHandler(this.display, this);
 		gameState = new GameState();
 		menuState = new MenuState();
@@ -145,11 +106,11 @@ public class Game implements Runnable {
 		// StateManager.getState().tick();
 		// }
 
-		if (this.paused) {
+		if (this.isPaused()) {
 			return;
 		}
 
-		Piece currentPiece = this.getPiece();
+		Piece currentPiece = this.getCurrentPiece();
 		
 		if (this.field.isPieceFallen(currentPiece)) {
 			this.field.placePiece(currentPiece);
@@ -167,24 +128,25 @@ public class Game implements Runnable {
 		this.bs = display.getCanvas().getBufferStrategy();
 		// If our bufferStrategy doesn't know how many buffers to use
 		// we create some manually
-		if (bs == null) {
+		if (this.bs == null) {
 			// Create 2 buffers
-			display.getCanvas().createBufferStrategy(2);
+			this.display.getCanvas().createBufferStrategy(2);
 			// returns out of the method to prevent errors
 			return;
 		}
 
 		// Instantiates the graphics related to the bufferStrategy
-		g = this.bs.getDrawGraphics();
+		this.graphics = this.bs.getDrawGraphics();
+		
 		// Clear the screen at every frame
-		g.clearRect(0, 0, this.displayWidth, this.displayHeight);
+		this.graphics.clearRect(0, 0, this.display.getWidth(), this.display.getHeight());
 		// Beginning of drawing things on the screen
 
-		g.drawLine(300, 0, 300, 600);
+		this.graphics.drawLine(300, 0, 300, 600);
 
-		this.field.render(g);
-		this.piece.render(g);
-		this.nextPiece.render(g);
+		this.field.render(this.graphics);
+		this.currentPiece.render(this.graphics);
+		this.nextPiece.render(this.graphics);
 
 		// Checks if a State exists and render()
 		// if (StateManager.getState() != null){
@@ -196,7 +158,7 @@ public class Game implements Runnable {
 		// Enables the buffer
 		bs.show();
 		// Shows everything stored in the Graphics object
-		g.dispose();
+		this.graphics.dispose();
 	}
 
 	@Override
@@ -226,11 +188,11 @@ public class Game implements Runnable {
 		// If the game is running exit the method
 		// This is done in order to prevent the game to initialize
 		// more than enough threads
-		if (this.running) {
+		if (this.isRunning()) {
 			return;
 		}
 		// Setting the while-game-loop to run
-		this.running = true;
+		this.setRunning(true);
 		// Initialize the thread that will work with "this" class (game.Game)
 		this.thread = new Thread(this);
 		// The start method will call start the new thread and it will call
@@ -243,10 +205,12 @@ public class Game implements Runnable {
 		// If the game is not running exit the method
 		// This is done to prevent the game from stopping a
 		// non-existing thread and cause errors
-		if (!this.running) {
+		if (!this.isRunning()) {
 			return;
 		}
-		this.running = false;
+		
+		this.setRunning(false);
+		
 		// The join method stops the current method from executing and it
 		// must be surrounded in try-catch in order to work
 		try {
@@ -264,31 +228,31 @@ public class Game implements Runnable {
 		this.paused = false;
 	}
 
-	private void swithToNextPiece() {
-		
-		Piece nextPiece = this.getNextPiece();
-				
-		nextPiece.movePieceToStartingPoing();
-									
-		this.setPiece(nextPiece);
-				
+	private void swithToNextPiece() {		
+		// get next piece
+		Piece nextPiece = this.getNextPiece();				
+		// move it to the staring position of the field
+		nextPiece.movePieceToStartingPoing();									
+		// assign the current piece to be the old next piece
+		this.setCurrentPiece(nextPiece);				
+		// create new next piece
 		this.setNextPiece(PieceGenerator.generatePiece(Game.NEXT_PIECE_X, Game.NEXT_PIECE_Y));		
 	}
 
 	public void rotatePiece() {
-		this.piece.rotate();
-		if (this.field.isPieceOut(this.piece) || this.field.isPieceIntoBrick(this.piece)) {
-			this.piece.undoRotate();
+		this.currentPiece.rotate();
+		if (this.field.isPieceOut(this.currentPiece) || this.field.isPieceIntoBrick(this.currentPiece)) {
+			this.currentPiece.undoRotate();
 		} else {
 			this.render();
 		}
 	}
 
 	public void movePieceLeft() {
-		if (!this.field.doesPieceTouchesLeftWall(this.piece)) {
-			this.piece.moveLeft();
-			if (this.field.isPieceIntoBrick(this.piece)) {
-				this.piece.moveRight();
+		if (!this.field.doesPieceTouchLeftWall(this.currentPiece)) {
+			this.currentPiece.moveLeft();
+			if (this.field.isPieceIntoBrick(this.currentPiece)) {
+				this.currentPiece.moveRight();
 			} else {
 				this.render();
 			}
@@ -296,10 +260,10 @@ public class Game implements Runnable {
 	}
 
 	public void movePieceRight() {
-		if (!this.field.doesPieceTouchesRightWall(this.piece)) {
-			this.piece.moveRight();
-			if (this.field.isPieceIntoBrick(this.piece)) {
-				this.piece.moveLeft();
+		if (!this.field.doesPieceTouchRightWall(this.currentPiece)) {
+			this.currentPiece.moveRight();
+			if (this.field.isPieceIntoBrick(this.currentPiece)) {
+				this.currentPiece.moveLeft();
 			} else {
 				this.render();
 			}
@@ -307,10 +271,10 @@ public class Game implements Runnable {
 	}
 
 	public void movePieceDown() {
-		if (!this.field.doesPieceTouchesBottom(this.piece)) {
-			this.piece.moveDown();
-			if (this.field.isPieceIntoBrick(this.piece)) {
-				this.piece.moveUp();
+		if (!this.field.doesPieceTouchesBottom(this.currentPiece)) {
+			this.currentPiece.moveDown();
+			if (this.field.isPieceIntoBrick(this.currentPiece)) {
+				this.currentPiece.moveUp();
 			} else {
 				this.render();
 			}

@@ -12,7 +12,7 @@ public class Field {
 		this.random = new Random();
 		this.initializeField(fieldHeight, fieldWidth);
 	}
-
+		
 	private void initializeField(int fieldHeight, int fieldWidth) {
 		this.field = new char[fieldHeight][fieldWidth];
 
@@ -26,7 +26,30 @@ public class Field {
 			}
 		}
 	}
+	
+	private boolean checkRowInField(int row) {
+		return row < this.field.length && row >= 0;
+	}
 
+	private boolean checkCollInField(int row, int col) {
+		return col < this.field[row].length && col >= 0;
+	}
+
+	private boolean checkIsFieldBrick(int row, int col) {
+		return !this.checkRowInField(row) || !this.checkCollInField(row, col) || this.field[row][col] == '1';
+	}
+	
+	public int getHeight() {	
+		// return the number of rows for the field char matrix
+		return this.field.length;
+	}
+	
+	public int getWidth() {
+		// return the number of collumns for the first row of the char matrix
+		// they are the same for every single other row
+		return this.field[0].length;
+	}
+	
 	public void render(Graphics g) {
 		for (int row = 0; row < field.length; row++) {
 			for (int col = 0; col < field[row].length; col++) {
@@ -59,14 +82,6 @@ public class Field {
 		return false;
 	}
 
-	private boolean checkRowInField(int row) {
-		return row < this.field.length && row >= 0;
-	}
-
-	private boolean checkCollInField(int row, int col) {
-		return col < this.field[row].length && col >= 0;
-	}
-
 	public boolean isPieceIntoBrick(Piece piece) {
 		char[][] pieceShape = piece.getShape();
 		int pieceX = piece.getX();
@@ -84,12 +99,8 @@ public class Field {
 
 		return false;
 	}
-
-	private boolean checkIsFieldBrick(int row, int col) {
-		return !this.checkRowInField(row) || !this.checkCollInField(row, col) || this.field[row][col] == '1';
-	}
-
-	public boolean doesPieceTouchesLeftWall(Piece piece) {
+	
+	public boolean doesPieceTouchLeftWall(Piece piece) {
 		char[][] pieceShape = piece.getShape();
 		int pieceX = piece.getX();
 
@@ -104,7 +115,7 @@ public class Field {
 		return false;
 	}
 
-	public boolean doesPieceTouchesRightWall(Piece piece) {
+	public boolean doesPieceTouchRightWall(Piece piece) {
 		char[][] pieceShape = piece.getShape();
 		int pieceX = piece.getX();
 		int pieceY = piece.getY();
