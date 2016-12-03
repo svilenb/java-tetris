@@ -29,6 +29,6 @@ public final class PieceGenerator {
 	}
 
 	public static Piece generatePiece() {
-		return generatePiece(4, 0);
+		return generatePiece(Game.STARTING_PIECE_X, Game.STARTING_PIECE_Y);
 	}
 }

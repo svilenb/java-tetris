@@ -3,32 +3,36 @@ package game;
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class Piece {
+public class Piece {	
+	
+	private static final int RECT_WIDTH = 30;
+	private static final int RECT_HEIGHT = 30;
+
 	private int x;
 	private int y;
-	private PieceShape shape;
+
+	private PieceShape shape;	
 
 	public Piece(int x, int y, PieceShape shape) {
-		this.x = x;
-		this.y = y;
-		this.shape = shape;
+		this.setX(x);
+		this.setY(y);
+
+		this.setShape(shape);		
 	}
 
 	public void render(Graphics g) {
-		char[][] shape = this.shape.getShape();
+		char[][] shape = this.getShape();
 
 		for (int row = 0; row < shape.length; row++) {
 			for (int col = 0; col < shape[0].length; col++) {
-				int rectX = (this.x + col) * 30;
-				int rectY = (this.y + row) * 30;
-				int rectWidth = 30;
-				int rectHeight = 30;
+				int rectX = (this.x + col) * Piece.RECT_WIDTH;
+				int rectY = (this.y + row) * Piece.RECT_HEIGHT;
 
 				if (shape[row][col] == '2') {
 					g.setColor(Color.blue);
-					g.fillRect(rectX, rectY, rectWidth, rectHeight);
+					g.fillRect(rectX, rectY, Piece.RECT_WIDTH, Piece.RECT_HEIGHT);
 					g.setColor(Color.black);
-					g.drawRect(rectX, rectY, rectWidth, rectHeight);
+					g.drawRect(rectX, rectY, Piece.RECT_WIDTH, Piece.RECT_HEIGHT);
 				}
 			}
 		}
@@ -46,6 +50,14 @@ public class Piece {
 		return y;
 	}
 
+	private void setX(int x) {
+		this.x = x;
+	}
+
+	private void setY(int y) {
+		this.y = y;
+	}
+
 	public void rotate() {
 		this.shape.rotate();
 	}
@@ -54,6 +66,11 @@ public class Piece {
 		this.shape.undoRotate();
 	}
 
+	public void movePieceToStartingPoing() {
+		this.setX(Game.STARTING_PIECE_X);
+		this.setY(Game.STARTING_PIECE_Y);
+	}
+	
 	public void moveLeft() {
 		this.x--;
 	}
@@ -72,5 +89,9 @@ public class Piece {
 
 	public char[][] getShape() {
 		return this.shape.getShape();
+	}
+	
+	private void setShape(PieceShape shape) {
+		this.shape = shape;
 	}
 }

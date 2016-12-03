@@ -7,11 +7,24 @@ import java.awt.*;
 import java.awt.image.BufferStrategy;
 
 public class Game implements Runnable {
+
+	private static final int NEXT_PIECE_X = 11;
+	private static final int NEXT_PIECE_Y = 1;
+
+	public static final int STARTING_PIECE_X = 4;
+	public static final int STARTING_PIECE_Y = 0;
+	
+	private static final int DISPLAY_WIDTH = 450;
+	private static final int DISPLAY_HEIGHT = 600;
+
+	private static final int FIELD_WIDTH = 10;
+	private static final int FIELD_HEIGHT = 20;
+
 	private Display display;
-	private int width;
-	private int height;
-	private int fieldHeight = 20;
-	private int fieldWidth = 10;
+	private int displayWidth;
+	private int displayHeight;
+	private int fieldHeight;
+	private int fieldWidth;
 	private String title;
 	private boolean running = false;
 	private Thread thread;
@@ -24,20 +37,97 @@ public class Game implements Runnable {
 	private State settingsState;
 	private Field field;
 	private Piece piece;
+	private Piece nextPiece;
 	private boolean paused;
 
 	public Game(String title) {
-		this.width = 400;
-		this.height = 600;
-		this.fieldHeight = 20;
-		this.fieldWidth = 10;
+		this.setTitle(title);
+
+		this.setDisplayWidth(Game.DISPLAY_WIDTH);
+		this.setDisplayHeight(Game.DISPLAY_HEIGHT);
+
+		this.setFieldHeight(Game.FIELD_HEIGHT);
+		this.setFieldWidth(Game.FIELD_WIDTH);
+
+		this.field = new Field(this.getFieldHeight(), this.getFieldWidth());
+		this.setPiece(PieceGenerator.generatePiece());
+		this.setNextPiece(PieceGenerator.generatePiece(Game.NEXT_PIECE_X, Game.NEXT_PIECE_Y));
+	}
+
+	private int getDisplayWidth() {
+		return displayWidth;
+	}
+
+	private void setDisplayWidth(int width) {
+		this.displayWidth = width;
+	}
+
+	private int getDisplayHeight() {
+		return displayHeight;
+	}
+
+	private void setDisplayHeight(int height) {
+		this.displayHeight = height;
+	}
+
+	private int getFieldHeight() {
+		return fieldHeight;
+	}
+
+	private void setFieldHeight(int fieldHeight) {
+		this.fieldHeight = fieldHeight;
+	}
+
+	private int getFieldWidth() {
+		return fieldWidth;
+	}
+
+	private void setFieldWidth(int fieldWidth) {
+		this.fieldWidth = fieldWidth;
+	}
+
+	private String getTitle() {
+		return title;
+	}
+
+	private void setTitle(String title) {
 		this.title = title;
-		this.field = new Field(this.fieldHeight, this.fieldWidth);
-		this.piece = PieceGenerator.generatePiece();
+	}
+
+	private boolean isRunning() {
+		return running;
+	}
+
+	private void setRunning(boolean running) {
+		this.running = running;
+	}
+
+	private Piece getPiece() {
+		return piece;
+	}
+
+	private void setPiece(Piece piece) {
+		this.piece = piece;
+	}
+
+	private Piece getNextPiece() {
+		return nextPiece;
+	}
+
+	private void setNextPiece(Piece nextPiece) {
+		this.nextPiece = nextPiece;
+	}
+
+	private boolean isPaused() {
+		return paused;
+	}
+
+	private void setPaused(boolean paused) {
+		this.paused = paused;
 	}
 
 	private void init() {
-		display = new Display(this.title, this.width, this.height);
+		display = new Display(this.title, this.displayWidth, this.displayHeight);
 		this.inputHandler = new InputHandler(this.display, this);
 		gameState = new GameState();
 		menuState = new MenuState();
@@ -59,12 +149,14 @@ public class Game implements Runnable {
 			return;
 		}
 
-		if (this.field.isPieceFallen(this.piece)) {
-			this.field.placePiece(this.piece);
+		Piece currentPiece = this.getPiece();
+		
+		if (this.field.isPieceFallen(currentPiece)) {
+			this.field.placePiece(currentPiece);
 			this.field.destroyFullRows();
-			this.piece = PieceGenerator.generatePiece();
+			this.swithToNextPiece();			
 		} else {
-			this.piece.tick();
+			currentPiece.tick();
 		}
 	}
 
@@ -81,16 +173,18 @@ public class Game implements Runnable {
 			// returns out of the method to prevent errors
 			return;
 		}
+
 		// Instantiates the graphics related to the bufferStrategy
 		g = this.bs.getDrawGraphics();
 		// Clear the screen at every frame
-		g.clearRect(0, 0, this.width, this.height);
+		g.clearRect(0, 0, this.displayWidth, this.displayHeight);
 		// Beginning of drawing things on the screen
 
 		g.drawLine(300, 0, 300, 600);
 
 		this.field.render(g);
 		this.piece.render(g);
+		this.nextPiece.render(g);
 
 		// Checks if a State exists and render()
 		// if (StateManager.getState() != null){
@@ -109,7 +203,7 @@ public class Game implements Runnable {
 	public void run() {
 		this.init();
 
-		while (running) {
+		while (this.running) {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
@@ -132,11 +226,11 @@ public class Game implements Runnable {
 		// If the game is running exit the method
 		// This is done in order to prevent the game to initialize
 		// more than enough threads
-		if (running) {
+		if (this.running) {
 			return;
 		}
 		// Setting the while-game-loop to run
-		running = true;
+		this.running = true;
 		// Initialize the thread that will work with "this" class (game.Game)
 		this.thread = new Thread(this);
 		// The start method will call start the new thread and it will call
@@ -149,10 +243,10 @@ public class Game implements Runnable {
 		// If the game is not running exit the method
 		// This is done to prevent the game from stopping a
 		// non-existing thread and cause errors
-		if (!running) {
+		if (!this.running) {
 			return;
 		}
-		running = false;
+		this.running = false;
 		// The join method stops the current method from executing and it
 		// must be surrounded in try-catch in order to work
 		try {
@@ -168,6 +262,17 @@ public class Game implements Runnable {
 
 	public void resume() {
 		this.paused = false;
+	}
+
+	private void swithToNextPiece() {
+		
+		Piece nextPiece = this.getNextPiece();
+				
+		nextPiece.movePieceToStartingPoing();
+									
+		this.setPiece(nextPiece);
+				
+		this.setNextPiece(PieceGenerator.generatePiece(Game.NEXT_PIECE_X, Game.NEXT_PIECE_Y));		
 	}
 
 	public void rotatePiece() {
