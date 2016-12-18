@@ -34,9 +34,9 @@ public class Piece {
 					int rectX = (this.x + col) * Piece.RECT_WIDTH;
 					int rectY = (this.y + row) * Piece.RECT_HEIGHT;
 					
-					g.setColor(Color.blue);
+					g.setColor(shape.getColor());
 					g.fillRect(rectX, rectY, Piece.RECT_WIDTH, Piece.RECT_HEIGHT);
-					g.setColor(Color.black);
+					g.setColor(Color.WHITE);				
 					g.drawRect(rectX, rectY, Piece.RECT_WIDTH, Piece.RECT_HEIGHT);
 				}
 			}

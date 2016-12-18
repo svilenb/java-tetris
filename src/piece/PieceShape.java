@@ -1,5 +1,6 @@
 package piece;
 
+import java.awt.Color;
 import java.util.Arrays;
 
 import game.FieldSquare;
@@ -20,7 +21,9 @@ public abstract class PieceShape {
 	}
 
 	protected abstract FieldSquare[][][] getShapes();	
-
+	
+	public abstract Color getColor();
+	
 	public int getHeight() {		
 		return this.getCurrentShape().length;
 	}
