@@ -2,31 +2,35 @@ package game;
 
 import java.awt.Graphics;
 import java.util.Random;
+
+import piece.Piece;
+import piece.PieceShape;
+
 import java.awt.*;
 
 public class Field {
-	private char[][] field;
+	private FieldSquare[][] field;
 	private Random random;
 
 	public Field(int fieldHeight, int fieldWidth) {
 		this.random = new Random();
 		this.initializeField(fieldHeight, fieldWidth);
 	}
-		
+
 	private void initializeField(int fieldHeight, int fieldWidth) {
-		this.field = new char[fieldHeight][fieldWidth];
+		this.field = new FieldSquare[fieldHeight][fieldWidth];
 
 		for (int row = 0; row < field.length; row++) {
 			for (int col = 0; col < field[0].length; col++) {
 				if (row > 8 && this.random.nextInt(11) <= 5) {
-					this.field[row][col] = '1';
+					this.field[row][col] = FieldSquare.STACK;
 				} else {
-					this.field[row][col] = '0';
+					this.field[row][col] = FieldSquare.EMPTY;
 				}
 			}
 		}
 	}
-	
+
 	private boolean checkRowInField(int row) {
 		return row < this.field.length && row >= 0;
 	}
@@ -36,26 +40,27 @@ public class Field {
 	}
 
 	private boolean checkIsFieldBrick(int row, int col) {
-		return !this.checkRowInField(row) || !this.checkCollInField(row, col) || this.field[row][col] == '1';
+		return (!this.checkRowInField(row) || !this.checkCollInField(row, col)
+				|| this.field[row][col].equals(FieldSquare.STACK));
 	}
-	
-	public int getHeight() {	
+
+	public int getHeight() {
 		// return the number of rows for the field char matrix
 		return this.field.length;
 	}
-	
+
 	public int getWidth() {
 		// return the number of collumns for the first row of the char matrix
 		// they are the same for every single other row
 		return this.field[0].length;
 	}
-	
+
 	public void render(Graphics g) {
 		for (int row = 0; row < field.length; row++) {
 			for (int col = 0; col < field[row].length; col++) {
-				if (this.field[row][col] == '0') {
+				if (this.field[row][col].equals(FieldSquare.EMPTY)) {
 					g.setColor(Color.lightGray);
-				} else if (this.field[row][col] == '1') {
+				} else if (this.field[row][col].equals(FieldSquare.STACK)) {
 					g.setColor(Color.darkGray);
 				}
 
@@ -64,16 +69,17 @@ public class Field {
 		}
 	}
 
-	public boolean isPieceFallen(Piece piece) {
-		char[][] pieceShape = piece.getShape();
+	public boolean isPieceFallen(Piece piece) {					
 		int pieceX = piece.getX();
 		int pieceY = piece.getY();
-
-		for (int row = 0; row < pieceShape.length; row++) {
-			for (int col = 0; col < pieceShape[row].length; col++) {
-				boolean isPieceBrick = pieceShape[row][col] == '2';
-
-				if (isPieceBrick && this.checkIsFieldBrick(pieceY + row + 1, pieceX + col)) {
+		
+		PieceShape pieceShape = piece.getShape();
+		int pieceHeight = pieceShape.getHeight();
+		int pieceWidth = pieceShape.getWidth();
+		
+		for (int row = 0; row < pieceHeight; row++) {
+			for (int col = 0; col < pieceWidth; col++) {
+				if (pieceShape.isPieceBrick(row, col) && this.checkIsFieldBrick(pieceY + row + 1, pieceX + col)) {
 					return true;
 				}
 			}
@@ -83,15 +89,16 @@ public class Field {
 	}
 
 	public boolean isPieceIntoBrick(Piece piece) {
-		char[][] pieceShape = piece.getShape();
 		int pieceX = piece.getX();
 		int pieceY = piece.getY();
+		
+		PieceShape pieceShape = piece.getShape();
+		int pieceHeight = pieceShape.getHeight();
+		int pieceWidth = pieceShape.getWidth();
 
-		for (int row = 0; row < pieceShape.length; row++) {
-			for (int col = 0; col < pieceShape[row].length; col++) {
-				boolean isPieceBrick = pieceShape[row][col] == '2';
-
-				if (isPieceBrick && checkIsFieldBrick(pieceY + row, pieceX + col)) {
+		for (int row = 0; row < pieceHeight; row++) {
+			for (int col = 0; col < pieceWidth; col++) {
+				if (pieceShape.isPieceBrick(row, col) && checkIsFieldBrick(pieceY + row, pieceX + col)) {
 					return true;
 				}
 			}
@@ -99,14 +106,18 @@ public class Field {
 
 		return false;
 	}
-	
-	public boolean doesPieceTouchLeftWall(Piece piece) {
-		char[][] pieceShape = piece.getShape();
-		int pieceX = piece.getX();
 
-		for (int row = 0; row < pieceShape.length; row++) {
-			for (int col = 0; col < pieceShape[row].length; col++) {
-				if (pieceShape[row][col] == '2' && pieceX + col == 0) {
+	public boolean doesPieceTouchLeftWall(Piece piece) {
+		int pieceX = piece.getX();
+		int pieceY = piece.getY();
+		
+		PieceShape pieceShape = piece.getShape();
+		int pieceHeight = pieceShape.getHeight();
+		int pieceWidth = pieceShape.getWidth();
+
+		for (int row = 0; row < pieceHeight; row++) {
+			for (int col = 0; col < pieceWidth; col++) {
+				if (pieceShape.isPieceBrick(row, col) && pieceX + col == 0) {
 					return true;
 				}
 			}
@@ -116,13 +127,16 @@ public class Field {
 	}
 
 	public boolean doesPieceTouchRightWall(Piece piece) {
-		char[][] pieceShape = piece.getShape();
 		int pieceX = piece.getX();
 		int pieceY = piece.getY();
+		
+		PieceShape pieceShape = piece.getShape();
+		int pieceHeight = pieceShape.getHeight();
+		int pieceWidth = pieceShape.getWidth();
 
-		for (int row = 0; row < pieceShape.length; row++) {
-			for (int col = 0; col < pieceShape[row].length; col++) {
-				if (pieceShape[row][col] == '2' && pieceX + col == this.field[pieceY + row].length - 1) {
+		for (int row = 0; row < pieceHeight; row++) {
+			for (int col = 0; col < pieceWidth; col++) {
+				if (pieceShape.isPieceBrick(row, col)  && pieceX + col == this.field[pieceY + row].length - 1) {
 					return true;
 				}
 			}
@@ -132,12 +146,16 @@ public class Field {
 	}
 
 	public boolean doesPieceTouchesBottom(Piece piece) {
-		char[][] pieceShape = piece.getShape();
+		int pieceX = piece.getX();
 		int pieceY = piece.getY();
-
-		for (int row = 0; row < pieceShape.length; row++) {
-			for (int col = 0; col < pieceShape[row].length; col++) {
-				if (pieceShape[row][col] == '2' && pieceY + row == this.field.length - 1) {
+		
+		PieceShape pieceShape = piece.getShape();
+		int pieceHeight = pieceShape.getHeight();
+		int pieceWidth = pieceShape.getWidth();
+		
+		for (int row = 0; row < pieceHeight; row++) {
+			for (int col = 0; col < pieceWidth; col++) {
+				if (pieceShape.isPieceBrick(row, col) && pieceY + row == this.field.length - 1) {
 					return true;
 				}
 			}
@@ -147,13 +165,16 @@ public class Field {
 	}
 
 	public boolean isPieceOut(Piece piece) {
-		char[][] pieceShape = piece.getShape();
 		int pieceX = piece.getX();
 		int pieceY = piece.getY();
+		
+		PieceShape pieceShape = piece.getShape();
+		int pieceHeight = pieceShape.getHeight();
+		int pieceWidth = pieceShape.getWidth();
 
-		for (int row = 0; row < pieceShape.length; row++) {
-			for (int col = 0; col < pieceShape[row].length; col++) {
-				if (pieceShape[row][col] == '2' && (!this.checkRowInField(pieceY + row)
+		for (int row = 0; row < pieceHeight; row++) {
+			for (int col = 0; col < pieceWidth; col++) {
+				if (pieceShape.isPieceBrick(row, col)  && (!this.checkRowInField(pieceY + row)
 						|| !this.checkCollInField(pieceY + row, pieceX + col))) {
 					return true;
 				}
@@ -164,14 +185,17 @@ public class Field {
 	}
 
 	public void placePiece(Piece piece) {
-		char[][] pieceShape = piece.getShape();
 		int pieceX = piece.getX();
 		int pieceY = piece.getY();
+		
+		PieceShape pieceShape = piece.getShape();
+		int pieceHeight = pieceShape.getHeight();
+		int pieceWidth = pieceShape.getWidth();
 
-		for (int row = 0; row < pieceShape.length; row++) {
-			for (int col = 0; col < pieceShape[row].length; col++) {
-				if (pieceShape[row][col] == '2') {
-					this.field[pieceY + row][pieceX + col] = '1';
+		for (int row = 0; row < pieceHeight; row++) {
+			for (int col = 0; col < pieceWidth; col++) {
+				if (pieceShape.isPieceBrick(row, col)) {
+					this.field[pieceY + row][pieceX + col] = FieldSquare.STACK;
 				}
 			}
 		}
@@ -181,7 +205,7 @@ public class Field {
 		for (int row = 0; row < this.field.length; row++) {
 			boolean isFullRow = true;
 			for (int col = 0; col < this.field[row].length; col++) {
-				if (this.field[row][col] == '0') {
+				if (this.field[row][col].equals(FieldSquare.EMPTY)) {
 					isFullRow = false;
 					break;
 				}

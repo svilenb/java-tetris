@@ -1,6 +1,8 @@
-package game;
+package piece;
 
 import java.util.Arrays;
+
+import game.FieldSquare;
 
 public abstract class PieceShape {
 	private int currentShapeIndex;
@@ -17,23 +19,26 @@ public abstract class PieceShape {
 		this.currentShapeIndex = currentShapeIndex;
 	}
 
-	protected abstract char[][][] getShapes();
+	protected abstract FieldSquare[][][] getShapes();	
 
-	public char[][] getShape() {
-		char[][][] shapes = this.getShapes();
-		char[][] currentShape = shapes[this.getCurrentShapeIndex()];
-		char[][] result = new char[currentShape.length][];
-
-		for (int i = 0; i < currentShape.length; i++) {
-			result[i] = Arrays.copyOf(currentShape[i], currentShape[i].length);
-		}
-
-		return result;
+	public int getHeight() {		
+		return this.getCurrentShape().length;
 	}
-
+	
+	public int getWidth() {		
+		return this.getCurrentShape()[0].length;
+	}
+	
+	private FieldSquare[][] getCurrentShape () {
+		FieldSquare[][][] shapes = this.getShapes();	
+		FieldSquare [][] shape = shapes[this.getCurrentShapeIndex()];
+		
+		return shape;
+	}
+	
 	public void rotate() {
 		int currentShapeIndex = this.getCurrentShapeIndex();
-		char[][][] shapes = this.getShapes();
+		FieldSquare[][][] shapes = this.getShapes();
 
 		if (currentShapeIndex == shapes.length - 1) {
 			this.setCurrentShapeIndex(0);
@@ -44,12 +49,18 @@ public abstract class PieceShape {
 
 	public void undoRotate() {
 		int currentShapeIndex = this.getCurrentShapeIndex();
-		char[][][] shapes = this.getShapes();
+		FieldSquare[][][] shapes = this.getShapes();
 
 		if (currentShapeIndex == 0) {
 			this.setCurrentShapeIndex(shapes.length - 1);
 		} else {
 			this.setCurrentShapeIndex(currentShapeIndex - 1);
 		}
+	}
+	
+	public boolean isPieceBrick(int row, int col) {
+		FieldSquare[][] currentShape = this.getCurrentShape();
+		
+		return currentShape[row][col].equals(FieldSquare.PIECE);
 	}
 }

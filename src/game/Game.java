@@ -1,12 +1,14 @@
 package game;
 
 import display.Display;
+import piece.Piece;
+import piece.PieceGenerator;
 import states.*;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 
-public class Game implements Runnable {
+public class Game {
 
 	private static final int NEXT_PIECE_X = 11;
 	private static final int NEXT_PIECE_Y = 1;
@@ -18,12 +20,11 @@ public class Game implements Runnable {
 	private static final int DISPLAY_HEIGHT = 600;
 
 	private static final int FIELD_WIDTH = 10;
-	private static final int FIELD_HEIGHT = 20;
-
+	private static final int FIELD_HEIGHT = 20;	
+	
 	private Display display;
 	private String title;
-	private boolean running = false;
-	private Thread thread;
+	private boolean running = false;	
 	@SuppressWarnings("unused")
 	private InputHandler inputHandler;
 	private BufferStrategy bs;
@@ -93,7 +94,7 @@ public class Game implements Runnable {
 		gameState = new GameState();
 		menuState = new MenuState();
 		settingsState = new SettingsState();
-
+		this.setRunning(true);
 		// Setting the currentState to gameState because we do not have
 		// any more states set up
 		// StateManage.setCurrentState(gameState);
@@ -160,12 +161,11 @@ public class Game implements Runnable {
 		// Shows everything stored in the Graphics object
 		this.graphics.dispose();
 	}
-
-	@Override
+	
 	public void run() {
 		this.init();
-
-		while (this.running) {
+		
+		while (this.isRunning()) {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
@@ -175,48 +175,6 @@ public class Game implements Runnable {
 
 			this.tick();
 			this.render();
-		}
-
-		// Calls the stop method to ensure everything has been stopped
-		this.stop();
-	}
-
-	// Creating a start method for the Thread to start our game
-	// Synchronized is used because our method is working with threads
-	// so we ensure ourselves that nothing will go bad
-	public synchronized void start() {
-		// If the game is running exit the method
-		// This is done in order to prevent the game to initialize
-		// more than enough threads
-		if (this.isRunning()) {
-			return;
-		}
-		// Setting the while-game-loop to run
-		this.setRunning(true);
-		// Initialize the thread that will work with "this" class (game.Game)
-		this.thread = new Thread(this);
-		// The start method will call start the new thread and it will call
-		// the run method in our class
-		this.thread.start();
-	}
-
-	// Creating a stop method for the Thread to stop our game
-	public synchronized void stop() {
-		// If the game is not running exit the method
-		// This is done to prevent the game from stopping a
-		// non-existing thread and cause errors
-		if (!this.isRunning()) {
-			return;
-		}
-		
-		this.setRunning(false);
-		
-		// The join method stops the current method from executing and it
-		// must be surrounded in try-catch in order to work
-		try {
-			this.thread.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
 		}
 	}
 

@@ -1,6 +1,8 @@
-package game;
+package piece;
 
 import java.util.Random;
+
+import game.Game;
 
 public final class PieceGenerator {
 	private static final Random random = new Random();

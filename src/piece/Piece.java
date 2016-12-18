@@ -1,34 +1,39 @@
-package game;
+package piece;
 
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class Piece {	
-	
+import game.FieldSquare;
+import game.Game;
+
+public class Piece {
+
 	private static final int RECT_WIDTH = 30;
 	private static final int RECT_HEIGHT = 30;
 
 	private int x;
 	private int y;
 
-	private PieceShape shape;	
+	private PieceShape shape;
 
 	public Piece(int x, int y, PieceShape shape) {
 		this.setX(x);
 		this.setY(y);
 
-		this.setShape(shape);		
+		this.setShape(shape);
 	}
 
 	public void render(Graphics g) {
-		char[][] shape = this.getShape();
-
-		for (int row = 0; row < shape.length; row++) {
-			for (int col = 0; col < shape[0].length; col++) {
-				int rectX = (this.x + col) * Piece.RECT_WIDTH;
-				int rectY = (this.y + row) * Piece.RECT_HEIGHT;
-
-				if (shape[row][col] == '2') {
+		PieceShape shape = this.getShape();
+		int shapeHeight = shape.getHeight();
+		int shapeWidth = shape.getWidth();
+		
+		for (int row = 0; row < shapeHeight; row++) {
+			for (int col = 0; col < shapeWidth; col++) {				
+				if (shape.isPieceBrick(row, col)) {				
+					int rectX = (this.x + col) * Piece.RECT_WIDTH;
+					int rectY = (this.y + row) * Piece.RECT_HEIGHT;
+					
 					g.setColor(Color.blue);
 					g.fillRect(rectX, rectY, Piece.RECT_WIDTH, Piece.RECT_HEIGHT);
 					g.setColor(Color.black);
@@ -70,7 +75,7 @@ public class Piece {
 		this.setX(Game.STARTING_PIECE_X);
 		this.setY(Game.STARTING_PIECE_Y);
 	}
-	
+
 	public void moveLeft() {
 		this.x--;
 	}
@@ -87,11 +92,11 @@ public class Piece {
 		this.y--;
 	}
 
-	public char[][] getShape() {
-		return this.shape.getShape();
-	}
-	
 	private void setShape(PieceShape shape) {
 		this.shape = shape;
+	}
+	
+	public PieceShape getShape() {
+		return this.shape;
 	}
 }
